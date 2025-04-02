@@ -7,7 +7,7 @@ pub struct PixelGrid {
 }
 
 impl PixelGrid {
-    pub fn get_pixel(&self, x: i32, y: i32) -> Option<Entity> {
+    pub fn _get_pixel(&self, x: i32, y: i32) -> Option<Entity> {
         self.grid.get(&(x, y)).cloned()
     }
 

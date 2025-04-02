@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 use rand::Rng;
 
+const GRAVITY: f32 = -0.2;
+const MAX_VELOCITY: f32 = -5.0;
+pub const FRICTION: f32 = 0.9;
+
 #[derive(PartialEq, Clone)]
 pub enum SandColor {
     YELLOW,
@@ -34,7 +38,6 @@ impl Default for SandColor {
 
 #[derive(PartialEq, Clone)]
 pub enum PixelType {
-    AIR,
     WATER {
         stagnation_count: i32,
         max_stagnation: i32,
@@ -45,7 +48,6 @@ pub enum PixelType {
 impl PixelType {
     pub fn as_color(&self) -> Color {
         match self {
-            PixelType::AIR => Color::NONE,
             PixelType::WATER { .. } => Color::srgb(0.0, 0.0, 1.0),
             PixelType::SAND(color) => color.as_color(),
         }
@@ -55,11 +57,22 @@ impl PixelType {
 #[derive(Component, Clone)]
 pub struct Pixel {
     pub pixel_type: PixelType,
+    pub velocity: Vec2,
 }
 impl Default for Pixel {
     fn default() -> Self {
         Pixel {
             pixel_type: PixelType::SAND(SandColor::default()),
+            velocity: (0.0, -1.0).into(),
+        }
+    }
+}
+
+impl Pixel {
+    pub fn apply_gravity(&mut self) {
+        self.velocity.y += GRAVITY;
+        if self.velocity.y < MAX_VELOCITY {
+            self.velocity.y = MAX_VELOCITY;
         }
     }
 }
